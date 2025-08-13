@@ -15,8 +15,8 @@ if ($_POST) {
             $replyMessage = sanitize($_POST['message']);
             
             if (!empty($sessionId) && !empty($replyMessage)) {
-                $stmt = $db->prepare("INSERT INTO chat_messages (session_id, sender_type, sender_name, sender_email, message) VALUES (?, 'admin', ?, ?, ?)");
-                $stmt->bind_param("ssss", $sessionId, $_SESSION['admin_name'], $_SESSION['admin_email'] ?? 'admin@jembarariset.com', $replyMessage);
+                $stmt = $db->prepare("INSERT INTO chat_messages (session_id, sender_type, sender_name, sender_whatsapp, message) VALUES (?, 'admin', ?, ?, ?)");
+                $stmt->bind_param("ssss", $sessionId, $_SESSION['admin_name'], '', $replyMessage);
                 
                 if ($stmt->execute()) {
                     $message = 'Pesan berhasil dikirim';
@@ -128,7 +128,7 @@ include 'includes/header.php';
                                     <?php endif; ?>
                                 </div>
                                 <p class="text-sm text-gray-600 truncate">
-                                    <?php echo $session['visitor_email'] ?: 'Email tidak tersedia'; ?>
+                                    <?php echo $session['visitor_whatsapp'] ?: 'WhatsApp tidak tersedia'; ?>
                                 </p>
                                 <?php if ($session['last_message']): ?>
                                 <p class="text-xs text-gray-500 truncate mt-1">
@@ -162,7 +162,7 @@ include 'includes/header.php';
                                 <?php echo $sessionInfo['visitor_name'] ?: 'Pengunjung'; ?>
                             </h3>
                             <p class="text-sm text-gray-600">
-                                <?php echo $sessionInfo['visitor_email'] ?: 'Email tidak tersedia'; ?>
+                                <?php echo $sessionInfo['visitor_whatsapp'] ?: 'WhatsApp tidak tersedia'; ?>
                             </p>
                         </div>
                         <form method="post" class="inline">

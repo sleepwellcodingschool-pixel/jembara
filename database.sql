@@ -105,7 +105,7 @@ CREATE TABLE chat_messages (
     session_id VARCHAR(100) NOT NULL,
     sender_type ENUM('visitor', 'admin') NOT NULL,
     sender_name VARCHAR(100),
-    sender_email VARCHAR(100),
+    sender_whatsapp VARCHAR(20),
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -116,7 +116,7 @@ CREATE TABLE chat_sessions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     session_id VARCHAR(100) UNIQUE NOT NULL,
     visitor_name VARCHAR(100),
-    visitor_email VARCHAR(100),
+    visitor_whatsapp VARCHAR(20),
     status ENUM('active', 'closed') DEFAULT 'active',
     admin_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

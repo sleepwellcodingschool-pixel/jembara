@@ -21,10 +21,10 @@ try {
                 case 'start_session':
                     $sessionId = generateChatSessionId();
                     $visitorName = sanitize($_POST['name'] ?? '');
-                    $visitorEmail = sanitize($_POST['email'] ?? '');
+                    $visitorWhatsapp = sanitize($_POST['whatsapp'] ?? '');
                     
-                    $stmt = $db->prepare("INSERT INTO chat_sessions (session_id, visitor_name, visitor_email) VALUES (?, ?, ?)");
-                    $stmt->bind_param("sss", $sessionId, $visitorName, $visitorEmail);
+                    $stmt = $db->prepare("INSERT INTO chat_sessions (session_id, visitor_name, visitor_whatsapp) VALUES (?, ?, ?)");
+                    $stmt->bind_param("sss", $sessionId, $visitorName, $visitorWhatsapp);
                     
                     if ($stmt->execute()) {
                         $response['success'] = true;
@@ -39,7 +39,7 @@ try {
                     $sessionId = sanitize($_POST['session_id'] ?? '');
                     $senderType = sanitize($_POST['sender_type'] ?? 'visitor');
                     $senderName = sanitize($_POST['sender_name'] ?? '');
-                    $senderEmail = sanitize($_POST['sender_email'] ?? '');
+                    $senderWhatsapp = sanitize($_POST['sender_whatsapp'] ?? '');
                     $message = sanitize($_POST['message'] ?? '');
                     
                     if (empty($sessionId) || empty($message)) {
@@ -47,8 +47,8 @@ try {
                         break;
                     }
                     
-                    $stmt = $db->prepare("INSERT INTO chat_messages (session_id, sender_type, sender_name, sender_email, message) VALUES (?, ?, ?, ?, ?)");
-                    $stmt->bind_param("sssss", $sessionId, $senderType, $senderName, $senderEmail, $message);
+                    $stmt = $db->prepare("INSERT INTO chat_messages (session_id, sender_type, sender_name, sender_whatsapp, message) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->bind_param("sssss", $sessionId, $senderType, $senderName, $senderWhatsapp, $message);
                     
                     if ($stmt->execute()) {
                         $response['success'] = true;

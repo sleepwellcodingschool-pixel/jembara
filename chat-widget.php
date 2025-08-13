@@ -34,7 +34,7 @@
                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary text-sm">
                 </div>
                 <div class="mb-4">
-                    <input type="email" id="visitorEmail" placeholder="Email Anda" required 
+                    <input type="tel" id="visitorWhatsapp" placeholder="Nomor WhatsApp (contoh: 08123456789)" required 
                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary text-sm">
                 </div>
                 <button type="submit" class="w-full bg-primary hover:bg-secondary text-white py-2 rounded-lg font-medium text-sm">
@@ -68,7 +68,7 @@ class ChatWidget {
     constructor() {
         this.sessionId = localStorage.getItem('chat_session_id');
         this.visitorName = localStorage.getItem('visitor_name');
-        this.visitorEmail = localStorage.getItem('visitor_email');
+        this.visitorWhatsapp = localStorage.getItem('visitor_whatsapp');
         this.isOpen = false;
         this.messageCheckInterval = null;
         this.lastMessageId = 0;
@@ -125,12 +125,12 @@ class ChatWidget {
         e.preventDefault();
         
         const name = document.getElementById('visitorName').value;
-        const email = document.getElementById('visitorEmail').value;
+        const whatsapp = document.getElementById('visitorWhatsapp').value;
         
         const formData = new FormData();
         formData.append('action', 'start_session');
         formData.append('name', name);
-        formData.append('email', email);
+        formData.append('whatsapp', whatsapp);
         
         try {
             const response = await fetch('api/chat.php', {
@@ -143,11 +143,11 @@ class ChatWidget {
             if (result.success) {
                 this.sessionId = result.data.session_id;
                 this.visitorName = name;
-                this.visitorEmail = email;
+                this.visitorWhatsapp = whatsapp;
                 
                 localStorage.setItem('chat_session_id', this.sessionId);
                 localStorage.setItem('visitor_name', name);
-                localStorage.setItem('visitor_email', email);
+                localStorage.setItem('visitor_whatsapp', whatsapp);
                 
                 this.showChatMessages();
                 this.startMessagePolling();
@@ -217,7 +217,7 @@ class ChatWidget {
         formData.append('session_id', this.sessionId);
         formData.append('sender_type', 'visitor');
         formData.append('sender_name', this.visitorName);
-        formData.append('sender_email', this.visitorEmail);
+        formData.append('sender_whatsapp', this.visitorWhatsapp);
         formData.append('message', message);
         
         try {
