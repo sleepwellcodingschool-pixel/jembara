@@ -166,7 +166,11 @@ INSERT INTO website_settings (setting_key, setting_value, setting_type) VALUES
 ('company_name', 'JEMBARA RISET DAN MEDIA', 'text'),
 ('business_field', 'Layanan Publikasi Ilmiah & Akses Penerbitan Jurnal', 'text'),
 ('hero_title', 'Jembatan Menuju Publikasi Ilmiah Berkualitas', 'text'),
-('hero_subtitle', 'Kami membantu peneliti, akademisi, dan profesional mewujudkan publikasi artikel di jurnal nasional dan internasional bereputasi', 'textarea');
+('hero_subtitle', 'Kami membantu peneliti, akademisi, dan profesional mewujudkan publikasi artikel di jurnal nasional dan internasional bereputasi', 'textarea'),
+('logo_url', '/assets/images/logo.svg', 'text'),
+('hero_image', '', 'text'),
+('about_image', '', 'text'),
+('services_bg', '', 'text');
 
 -- Insert default content sections
 INSERT INTO content_sections (section_key, title, content) VALUES

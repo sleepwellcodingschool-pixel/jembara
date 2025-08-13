@@ -226,11 +226,39 @@ include 'includes/header.php';
             </div>
             
             <div>
-                <label for="featured_image" class="block text-sm font-medium text-gray-700 mb-2">URL Gambar Utama</label>
-                <input type="url" id="featured_image" name="featured_image" 
-                       value="<?php echo $editPost ? htmlspecialchars($editPost['featured_image']) : ''; ?>"
-                       placeholder="https://example.com/image.jpg"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                <label for="featured_image" class="block text-sm font-medium text-gray-700 mb-2">Gambar Utama</label>
+                <div class="space-y-4">
+                    <?php if ($editPost && $editPost['featured_image']): ?>
+                    <div class="flex items-center space-x-4">
+                        <img src="<?php echo $editPost['featured_image']; ?>" alt="Featured Image" class="w-32 h-24 object-cover rounded-lg border">
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-600">Gambar saat ini</p>
+                            <button type="button" onclick="removeImage()" class="text-red-600 hover:text-red-800 text-sm">
+                                <i class="fas fa-trash mr-1"></i>Hapus gambar
+                            </button>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <div class="flex space-x-4">
+                        <input type="url" id="featured_image" name="featured_image" 
+                               value="<?php echo $editPost ? htmlspecialchars($editPost['featured_image']) : ''; ?>"
+                               placeholder="https://example.com/image.jpg"
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                        <button type="button" onclick="openImagePicker()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors">
+                            <i class="fas fa-images mr-2"></i>Pilih dari Galeri
+                        </button>
+                    </div>
+                    
+                    <!-- Quick Upload -->
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                        <input type="file" id="quickUpload" accept="image/*" class="hidden" onchange="uploadImageQuick(this)">
+                        <button type="button" onclick="document.getElementById('quickUpload').click()" class="text-primary hover:text-secondary">
+                            <i class="fas fa-plus mr-2"></i>Upload Gambar Baru
+                        </button>
+                        <p class="text-xs text-gray-500 mt-1">Atau drag & drop gambar di sini</p>
+                    </div>
+                </div>
             </div>
             
             <div>
@@ -411,5 +439,150 @@ include 'includes/header.php';
         <?php endif; ?>
     </div>
 </div>
+
+<!-- Image Picker Modal -->
+<div id="imagePicker" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 max-h-96 overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-900">Pilih Gambar</h3>
+            <button onclick="closeImagePicker()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-4 md:grid-cols-6 gap-4" id="imagePickerGrid">
+            <!-- Images will be loaded here via AJAX -->
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="media.php" target="_blank" class="text-primary hover:text-secondary">
+                <i class="fas fa-external-link-alt mr-1"></i>Buka Media Manager
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function openImagePicker() {
+    document.getElementById('imagePicker').classList.remove('hidden');
+    loadImages();
+}
+
+function closeImagePicker() {
+    document.getElementById('imagePicker').classList.add('hidden');
+}
+
+function loadImages() {
+    fetch('api/get-media.php')
+        .then(response => response.json())
+        .then(data => {
+            const grid = document.getElementById('imagePickerGrid');
+            grid.innerHTML = '';
+            
+            data.forEach(image => {
+                const img = document.createElement('img');
+                img.src = image.file_path;
+                img.alt = image.original_name;
+                img.className = 'w-full h-20 object-cover rounded border cursor-pointer hover:opacity-75 transition-opacity';
+                img.onclick = () => selectImageFromPicker(image.file_path);
+                grid.appendChild(img);
+            });
+        });
+}
+
+function selectImageFromPicker(imageUrl) {
+    document.getElementById('featured_image').value = imageUrl;
+    closeImagePicker();
+    
+    // Show preview
+    showImagePreview(imageUrl);
+}
+
+function showImagePreview(imageUrl) {
+    // Create or update preview
+    let preview = document.querySelector('.image-preview');
+    if (!preview) {
+        preview = document.createElement('div');
+        preview.className = 'image-preview mt-2';
+        document.getElementById('featured_image').parentNode.appendChild(preview);
+    }
+    
+    preview.innerHTML = `
+        <img src="${imageUrl}" alt="Preview" class="w-32 h-24 object-cover rounded border">
+    `;
+}
+
+function removeImage() {
+    document.getElementById('featured_image').value = '';
+    const preview = document.querySelector('.image-preview');
+    if (preview) {
+        preview.remove();
+    }
+}
+
+function uploadImageQuick(input) {
+    if (input.files && input.files[0]) {
+        const formData = new FormData();
+        formData.append('upload_file', input.files[0]);
+        
+        fetch('api/upload-image.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('featured_image').value = data.file_path;
+                showImagePreview(data.file_path);
+                showNotification('Gambar berhasil diupload!');
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error uploading image');
+        });
+    }
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Drag and drop for quick upload
+document.addEventListener('DOMContentLoaded', function() {
+    const quickUploadArea = document.querySelector('.border-dashed');
+    
+    quickUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('border-primary', 'bg-primary-50');
+    });
+    
+    quickUploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-primary', 'bg-primary-50');
+    });
+    
+    quickUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('border-primary', 'bg-primary-50');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const input = document.getElementById('quickUpload');
+            input.files = files;
+            uploadImageQuick(input);
+        }
+    });
+});
+</script>
 
 <?php include 'includes/footer.php'; ?>

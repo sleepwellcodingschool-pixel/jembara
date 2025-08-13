@@ -78,18 +78,18 @@ function getSetting($key, $default = '') {
     $stmt->bind_param("s", $key);
     $stmt->execute();
     $result = $stmt->get_result();
-    
-    if ($row = $result->fetch_assoc()) {
-        return $row['setting_value'];
+
+    if ($result && $result->num_rows > 0) {
+        return $result->fetch_assoc()['setting_value'];
     }
-    
+
     return $default;
 }
 
 function updateSetting($key, $value) {
     global $db;
-    $stmt = $db->prepare("UPDATE website_settings SET setting_value = ? WHERE setting_key = ?");
-    $stmt->bind_param("ss", $value, $key);
+    $stmt = $db->prepare("INSERT INTO website_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+    $stmt->bind_param("ss", $key, $value);
     return $stmt->execute();
 }
 ?>

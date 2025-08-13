@@ -36,19 +36,24 @@ $draftPosts = $db->query("SELECT COUNT(*) as count FROM blog_posts WHERE status 
                 <span>Konten & Halaman</span>
             </a>
 
-            <a href="testimonials.php" class="sidebar-link <?php echo $currentPage === 'testimonials' ? 'active' : ''; ?>">
-                <i class="fas fa-quote-left"></i>
-                <span>Testimonial</span>
-            </a>
-
             <a href="blog.php" class="sidebar-link <?php echo $currentPage === 'blog' ? 'active' : ''; ?>">
                 <i class="fas fa-newspaper"></i>
-                <span>Blog & Artikel</span>
+                <span>Blog & Berita</span>
                 <?php if ($draftPosts > 0): ?>
                 <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full ml-auto">
                     <?php echo $draftPosts; ?>
                 </span>
                 <?php endif; ?>
+            </a>
+
+            <a href="media.php" class="sidebar-link <?php echo $currentPage === 'media' ? 'active' : ''; ?>">
+                <i class="fas fa-images"></i>
+                <span>Media & Gambar</span>
+            </a>
+
+            <a href="testimonials.php" class="sidebar-link <?php echo $currentPage === 'testimonials' ? 'active' : ''; ?>">
+                <i class="fas fa-star"></i>
+                <span>Testimonial</span>
             </a>
         </div>
 
@@ -86,10 +91,7 @@ $draftPosts = $db->query("SELECT COUNT(*) as count FROM blog_posts WHERE status 
                 <span>Pengaturan</span>
             </a>
 
-            <a href="media.php" class="sidebar-link <?php echo $currentPage === 'media' ? 'active' : ''; ?>">
-                <i class="fas fa-images"></i>
-                <span>Media</span>
-            </a>
+            <!-- Media menu was already added in the "Content Management" section -->
         </div>
 
         <!-- Quick Actions -->
