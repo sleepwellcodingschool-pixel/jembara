@@ -589,3 +589,180 @@ function deleteTestimonial(testimonialId) {
 </style>
 
 <?php include 'includes/footer.php'; ?>
+<?php
+require_once '../config/config.php';
+requireLogin();
+
+$message = '';
+$error = '';
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action']) && $_POST['action'] === 'update_content') {
+        $sectionKey = sanitize($_POST['section_key']);
+        $title = sanitize($_POST['title']);
+        $content = sanitize($_POST['content']);
+        $imageUrl = sanitize($_POST['image_url']);
+        $isActive = isset($_POST['is_active']) ? 1 : 0;
+        
+        $stmt = $db->prepare("UPDATE content_sections SET title = ?, content = ?, image_url = ?, is_active = ? WHERE section_key = ?");
+        $stmt->bind_param("sssis", $title, $content, $imageUrl, $isActive, $sectionKey);
+        
+        if ($stmt->execute()) {
+            $message = 'Konten berhasil diperbarui!';
+        } else {
+            $error = 'Gagal memperbarui konten.';
+        }
+    }
+}
+
+// Get content sections
+$contentSections = $db->query("SELECT * FROM content_sections ORDER BY sort_order ASC");
+
+$pageTitle = 'Kelola Konten';
+include 'includes/header.php';
+?>
+
+<div class="p-6">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Kelola Konten & Halaman</h1>
+        <p class="text-gray-600">Kelola konten utama website seperti About, Vision, Mission, dan lainnya.</p>
+    </div>
+    
+    <?php if ($message): ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            <div class="flex">
+                <i class="fas fa-check-circle mr-3 mt-1"></i>
+                <span><?php echo $message; ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <?php if ($error): ?>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div class="flex">
+                <i class="fas fa-exclamation-circle mr-3 mt-1"></i>
+                <span><?php echo $error; ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <div class="space-y-8">
+        <?php while ($section = $contentSections->fetch_assoc()): ?>
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <form method="POST" class="space-y-6">
+                <input type="hidden" name="action" value="update_content">
+                <input type="hidden" name="section_key" value="<?php echo $section['section_key']; ?>">
+                
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">
+                            <?php echo ucwords(str_replace('_', ' ', $section['section_key'])); ?>
+                        </h2>
+                        <p class="text-sm text-gray-600">Section Key: <?php echo $section['section_key']; ?></p>
+                    </div>
+                    
+                    <label class="flex items-center">
+                        <input type="checkbox" name="is_active" <?php echo $section['is_active'] ? 'checked' : ''; ?> 
+                               class="rounded border-gray-300 text-primary focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50">
+                        <span class="ml-2 text-sm text-gray-700">Aktif</span>
+                    </label>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Judul</label>
+                    <input type="text" name="title" value="<?php echo htmlspecialchars($section['title']); ?>"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Konten</label>
+                    <textarea name="content" rows="8" 
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-vertical"><?php echo htmlspecialchars($section['content']); ?></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">URL Gambar</label>
+                    <div class="flex space-x-4">
+                        <input type="url" name="image_url" value="<?php echo htmlspecialchars($section['image_url']); ?>"
+                               placeholder="https://example.com/image.jpg"
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                        <button type="button" onclick="openImagePicker(this)" 
+                                class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg font-semibold transition-colors">
+                            <i class="fas fa-images mr-2"></i>Pilih Gambar
+                        </button>
+                    </div>
+                    
+                    <?php if ($section['image_url']): ?>
+                    <div class="mt-4">
+                        <img src="<?php echo $section['image_url']; ?>" alt="Preview" class="w-32 h-24 object-cover rounded border">
+                    </div>
+                    <?php endif; ?>
+                </div>
+                
+                <button type="submit" class="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-save mr-2"></i>Simpan Perubahan
+                </button>
+            </form>
+        </div>
+        <?php endwhile; ?>
+    </div>
+</div>
+
+<!-- Image Picker Modal -->
+<div id="imagePicker" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 max-h-96 overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold text-gray-900">Pilih Gambar</h3>
+            <button onclick="closeImagePicker()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-4 md:grid-cols-6 gap-4" id="imagePickerGrid">
+            <!-- Images will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+let currentImageInput = null;
+
+function openImagePicker(button) {
+    currentImageInput = button.previousElementSibling;
+    document.getElementById('imagePicker').classList.remove('hidden');
+    loadImages();
+}
+
+function closeImagePicker() {
+    document.getElementById('imagePicker').classList.add('hidden');
+    currentImageInput = null;
+}
+
+function loadImages() {
+    fetch('api/get-media.php')
+        .then(response => response.json())
+        .then(data => {
+            const grid = document.getElementById('imagePickerGrid');
+            grid.innerHTML = '';
+            
+            data.forEach(image => {
+                const img = document.createElement('img');
+                img.src = image.file_path;
+                img.alt = image.original_name;
+                img.className = 'w-full h-20 object-cover rounded border cursor-pointer hover:opacity-75 transition-opacity';
+                img.onclick = () => selectImage(image.file_path);
+                grid.appendChild(img);
+            });
+        });
+}
+
+function selectImage(imageUrl) {
+    if (currentImageInput) {
+        currentImageInput.value = imageUrl;
+    }
+    closeImagePicker();
+}
+</script>
+
+<?php include 'includes/footer.php'; ?>

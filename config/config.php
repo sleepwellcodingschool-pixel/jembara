@@ -92,4 +92,24 @@ function updateSetting($key, $value) {
     $stmt->bind_param("ss", $key, $value);
     return $stmt->execute();
 }
+
+function formatDate($date, $format = 'd M Y') {
+    return date($format, strtotime($date));
+}
+
+function truncateText($text, $length = 150) {
+    if (strlen($text) <= $length) {
+        return $text;
+    }
+    return substr($text, 0, $length) . '...';
+}
+
+function formatFileSize($bytes) {
+    $units = ['B', 'KB', 'MB', 'GB'];
+    $bytes = max($bytes, 0);
+    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+    $pow = min($pow, count($units) - 1);
+    $bytes /= pow(1024, $pow);
+    return round($bytes, 2) . ' ' . $units[$pow];
+}
 ?>

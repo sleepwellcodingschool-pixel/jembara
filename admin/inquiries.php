@@ -439,3 +439,280 @@ include 'includes/header.php';
 </div>
 
 <?php include 'includes/footer.php'; ?>
+<?php
+require_once '../config/config.php';
+requireLogin();
+
+$message = '';
+$error = '';
+
+// Handle actions
+if (isset($_GET['action'])) {
+    switch ($_GET['action']) {
+        case 'mark-read':
+            if (isset($_GET['id'])) {
+                $inquiryId = (int)$_GET['id'];
+                $stmt = $db->prepare("UPDATE contact_inquiries SET status = 'in_progress' WHERE id = ? AND status = 'new'");
+                $stmt->bind_param("i", $inquiryId);
+                if ($stmt->execute()) {
+                    $message = 'Pesan ditandai sebagai sudah dibaca!';
+                }
+            }
+            break;
+            
+        case 'resolve':
+            if (isset($_GET['id'])) {
+                $inquiryId = (int)$_GET['id'];
+                $stmt = $db->prepare("UPDATE contact_inquiries SET status = 'resolved' WHERE id = ?");
+                $stmt->bind_param("i", $inquiryId);
+                if ($stmt->execute()) {
+                    $message = 'Pesan ditandai sebagai selesai!';
+                }
+            }
+            break;
+            
+        case 'delete':
+            if (isset($_GET['id'])) {
+                $inquiryId = (int)$_GET['id'];
+                $stmt = $db->prepare("DELETE FROM contact_inquiries WHERE id = ?");
+                $stmt->bind_param("i", $inquiryId);
+                if ($stmt->execute()) {
+                    $message = 'Pesan berhasil dihapus!';
+                }
+            }
+            break;
+    }
+}
+
+// Handle admin notes update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_notes'])) {
+    $inquiryId = (int)$_POST['inquiry_id'];
+    $adminNotes = sanitize($_POST['admin_notes']);
+    
+    $stmt = $db->prepare("UPDATE contact_inquiries SET admin_notes = ? WHERE id = ?");
+    $stmt->bind_param("si", $adminNotes, $inquiryId);
+    
+    if ($stmt->execute()) {
+        $message = 'Catatan admin berhasil diperbarui!';
+    } else {
+        $error = 'Gagal memperbarui catatan admin.';
+    }
+}
+
+// Get inquiries with pagination
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$perPage = 15;
+$offset = ($page - 1) * $perPage;
+
+$filter = isset($_GET['filter']) ? $_GET['filter'] : 'all';
+$whereClause = '';
+if ($filter !== 'all') {
+    $whereClause = "WHERE status = '" . $db->real_escape_string($filter) . "'";
+}
+
+$totalInquiries = $db->query("SELECT COUNT(*) as count FROM contact_inquiries $whereClause")->fetch_assoc()['count'];
+$totalPages = ceil($totalInquiries / $perPage);
+
+$inquiries = $db->query("SELECT * FROM contact_inquiries $whereClause ORDER BY created_at DESC LIMIT $offset, $perPage");
+
+$pageTitle = 'Pesan Masuk';
+include 'includes/header.php';
+?>
+
+<div class="p-6">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Pesan Masuk</h1>
+        <p class="text-gray-600">Kelola pesan dan inquiry dari pengunjung website.</p>
+    </div>
+    
+    <?php if ($message): ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            <div class="flex">
+                <i class="fas fa-check-circle mr-3 mt-1"></i>
+                <span><?php echo $message; ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <?php if ($error): ?>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div class="flex">
+                <i class="fas fa-exclamation-circle mr-3 mt-1"></i>
+                <span><?php echo $error; ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <!-- Filter Tabs -->
+    <div class="mb-6">
+        <nav class="flex space-x-8">
+            <a href="?filter=all" class="filter-tab <?php echo $filter === 'all' ? 'active' : ''; ?>">
+                Semua (<?php echo $db->query("SELECT COUNT(*) as count FROM contact_inquiries")->fetch_assoc()['count']; ?>)
+            </a>
+            <a href="?filter=new" class="filter-tab <?php echo $filter === 'new' ? 'active' : ''; ?>">
+                Baru (<?php echo $db->query("SELECT COUNT(*) as count FROM contact_inquiries WHERE status = 'new'")->fetch_assoc()['count']; ?>)
+            </a>
+            <a href="?filter=in_progress" class="filter-tab <?php echo $filter === 'in_progress' ? 'active' : ''; ?>">
+                Diproses (<?php echo $db->query("SELECT COUNT(*) as count FROM contact_inquiries WHERE status = 'in_progress'")->fetch_assoc()['count']; ?>)
+            </a>
+            <a href="?filter=resolved" class="filter-tab <?php echo $filter === 'resolved' ? 'active' : ''; ?>">
+                Selesai (<?php echo $db->query("SELECT COUNT(*) as count FROM contact_inquiries WHERE status = 'resolved'")->fetch_assoc()['count']; ?>)
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Inquiries List -->
+    <div class="bg-white rounded-xl shadow-lg">
+        <?php if ($inquiries && $inquiries->num_rows > 0): ?>
+            <div class="divide-y divide-gray-200">
+                <?php while ($inquiry = $inquiries->fetch_assoc()): ?>
+                <div class="p-6 <?php echo $inquiry['status'] === 'new' ? 'bg-blue-50' : ''; ?>">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <h3 class="text-lg font-semibold text-gray-900">
+                                    <?php echo htmlspecialchars($inquiry['subject'] ?: 'Tanpa Subjek'); ?>
+                                </h3>
+                                <span class="px-2 py-1 text-xs font-medium rounded-full <?php 
+                                    echo $inquiry['status'] === 'new' ? 'bg-red-100 text-red-800' : 
+                                         ($inquiry['status'] === 'in_progress' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'); 
+                                ?>">
+                                    <?php 
+                                    $statusLabels = [
+                                        'new' => 'Baru',
+                                        'in_progress' => 'Diproses',
+                                        'resolved' => 'Selesai',
+                                        'closed' => 'Ditutup'
+                                    ];
+                                    echo $statusLabels[$inquiry['status']] ?? ucfirst($inquiry['status']);
+                                    ?>
+                                </span>
+                            </div>
+                            
+                            <div class="flex items-center space-x-6 text-sm text-gray-600 mb-3">
+                                <div class="flex items-center">
+                                    <i class="fas fa-user mr-1"></i>
+                                    <?php echo htmlspecialchars($inquiry['name']); ?>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-envelope mr-1"></i>
+                                    <a href="mailto:<?php echo $inquiry['email']; ?>" class="text-primary hover:text-secondary">
+                                        <?php echo htmlspecialchars($inquiry['email']); ?>
+                                    </a>
+                                </div>
+                                <?php if ($inquiry['phone']): ?>
+                                <div class="flex items-center">
+                                    <i class="fas fa-phone mr-1"></i>
+                                    <a href="tel:<?php echo $inquiry['phone']; ?>" class="text-primary hover:text-secondary">
+                                        <?php echo htmlspecialchars($inquiry['phone']); ?>
+                                    </a>
+                                </div>
+                                <?php endif; ?>
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    <?php echo date('d M Y H:i', strtotime($inquiry['created_at'])); ?>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                <p class="text-gray-800 whitespace-pre-wrap"><?php echo htmlspecialchars($inquiry['message']); ?></p>
+                            </div>
+                            
+                            <!-- Admin Notes -->
+                            <div class="border-t pt-4">
+                                <form method="POST" class="flex items-end space-x-4">
+                                    <input type="hidden" name="inquiry_id" value="<?php echo $inquiry['id']; ?>">
+                                    <div class="flex-1">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Catatan Admin</label>
+                                        <textarea name="admin_notes" rows="2" placeholder="Tambahkan catatan atau tindak lanjut..."
+                                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-vertical text-sm"><?php echo htmlspecialchars($inquiry['admin_notes']); ?></textarea>
+                                    </div>
+                                    <button type="submit" name="update_notes" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors">
+                                        Simpan
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex flex-col space-y-2 ml-6">
+                            <?php if ($inquiry['status'] === 'new'): ?>
+                            <a href="?action=mark-read&id=<?php echo $inquiry['id']; ?>" 
+                               class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-xs font-semibold transition-colors text-center">
+                                <i class="fas fa-eye mr-1"></i>Tandai Dibaca
+                            </a>
+                            <?php endif; ?>
+                            
+                            <?php if ($inquiry['status'] !== 'resolved'): ?>
+                            <a href="?action=resolve&id=<?php echo $inquiry['id']; ?>" 
+                               class="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-xs font-semibold transition-colors text-center">
+                                <i class="fas fa-check mr-1"></i>Selesai
+                            </a>
+                            <?php endif; ?>
+                            
+                            <a href="mailto:<?php echo $inquiry['email']; ?>?subject=Re: <?php echo urlencode($inquiry['subject']); ?>" 
+                               class="bg-primary hover:bg-secondary text-white px-3 py-2 rounded text-xs font-semibold transition-colors text-center">
+                                <i class="fas fa-reply mr-1"></i>Balas
+                            </a>
+                            
+                            <a href="?action=delete&id=<?php echo $inquiry['id']; ?>" 
+                               class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-xs font-semibold transition-colors text-center"
+                               onclick="return confirm('Apakah Anda yakin ingin menghapus pesan ini?')">
+                                <i class="fas fa-trash mr-1"></i>Hapus
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <?php endwhile; ?>
+            </div>
+            
+            <!-- Pagination -->
+            <?php if ($totalPages > 1): ?>
+            <div class="p-6 border-t border-gray-200">
+                <div class="flex justify-center">
+                    <nav class="flex items-center space-x-2">
+                        <?php if ($page > 1): ?>
+                        <a href="?filter=<?php echo $filter; ?>&page=<?php echo $page - 1; ?>" 
+                           class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-chevron-left mr-2"></i>Previous
+                        </a>
+                        <?php endif; ?>
+                        
+                        <?php for ($i = max(1, $page - 2); $i <= min($totalPages, $page + 2); $i++): ?>
+                        <a href="?filter=<?php echo $filter; ?>&page=<?php echo $i; ?>" 
+                           class="px-4 py-2 border <?php echo $i == $page ? 'bg-primary text-white border-primary' : 'border-gray-300 text-gray-600 hover:bg-gray-50'; ?> rounded-lg transition-colors">
+                            <?php echo $i; ?>
+                        </a>
+                        <?php endfor; ?>
+                        
+                        <?php if ($page < $totalPages): ?>
+                        <a href="?filter=<?php echo $filter; ?>&page=<?php echo $page + 1; ?>" 
+                           class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors">
+                            Next<i class="fas fa-chevron-right ml-2"></i>
+                        </a>
+                        <?php endif; ?>
+                    </nav>
+                </div>
+            </div>
+            <?php endif; ?>
+        <?php else: ?>
+            <div class="p-12 text-center text-gray-500">
+                <i class="fas fa-inbox text-6xl mb-4 text-gray-300"></i>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Belum Ada Pesan</h3>
+                <p class="mb-6">Pesan dari pengunjung akan muncul di sini.</p>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<style>
+.filter-tab {
+    @apply px-4 py-2 font-semibold text-gray-600 border-b-2 border-transparent hover:text-primary hover:border-primary transition-colors;
+}
+
+.filter-tab.active {
+    @apply text-primary border-primary;
+}
+</style>
+
+<?php include 'includes/footer.php'; ?>

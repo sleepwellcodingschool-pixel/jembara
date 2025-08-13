@@ -527,3 +527,213 @@ function hideAddAdminModal() {
 </style>
 
 <?php include 'includes/footer.php'; ?>
+<?php
+require_once '../config/config.php';
+requireLogin();
+
+$message = '';
+$error = '';
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $settings = [
+        'site_title' => sanitize($_POST['site_title']),
+        'site_tagline' => sanitize($_POST['site_tagline']),
+        'site_description' => sanitize($_POST['site_description']),
+        'contact_email' => sanitize($_POST['contact_email']),
+        'contact_phone' => sanitize($_POST['contact_phone']),
+        'contact_address' => sanitize($_POST['contact_address']),
+        'primary_color' => sanitize($_POST['primary_color']),
+        'secondary_color' => sanitize($_POST['secondary_color']),
+        'accent_color' => sanitize($_POST['accent_color']),
+        'hero_title' => sanitize($_POST['hero_title']),
+        'hero_subtitle' => sanitize($_POST['hero_subtitle'])
+    ];
+    
+    $success = true;
+    foreach ($settings as $key => $value) {
+        if (!updateSetting($key, $value)) {
+            $success = false;
+            break;
+        }
+    }
+    
+    if ($success) {
+        $message = 'Pengaturan berhasil disimpan!';
+    } else {
+        $error = 'Gagal menyimpan pengaturan.';
+    }
+}
+
+// Get current settings
+$currentSettings = [
+    'site_title' => getSetting('site_title', 'JEMBARA RISET DAN MEDIA'),
+    'site_tagline' => getSetting('site_tagline', 'AKU, KAMU DAN DIA, HIDUPKAN PENELITIAN DI INDONESIA'),
+    'site_description' => getSetting('site_description', 'Layanan Publikasi Ilmiah & Akses Penerbitan Jurnal'),
+    'contact_email' => getSetting('contact_email', 'jembararisetdanmedia@gmail.com'),
+    'contact_phone' => getSetting('contact_phone', '0822 4198 0834'),
+    'contact_address' => getSetting('contact_address', 'Jl. K.H. Sholeh Iskandar Raya Km. 2, Kedung Badak, Bogor 16161'),
+    'primary_color' => getSetting('primary_color', '#2563eb'),
+    'secondary_color' => getSetting('secondary_color', '#1e40af'),
+    'accent_color' => getSetting('accent_color', '#f59e0b'),
+    'hero_title' => getSetting('hero_title', 'Jembatan Menuju Publikasi Ilmiah Berkualitas'),
+    'hero_subtitle' => getSetting('hero_subtitle', 'Kami membantu peneliti, akademisi, dan profesional mewujudkan publikasi artikel di jurnal nasional dan internasional bereputasi')
+];
+
+$pageTitle = 'Pengaturan Website';
+include 'includes/header.php';
+?>
+
+<div class="p-6">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Pengaturan Website</h1>
+        <p class="text-gray-600">Kelola pengaturan dasar website dan informasi kontak.</p>
+    </div>
+    
+    <?php if ($message): ?>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+            <div class="flex">
+                <i class="fas fa-check-circle mr-3 mt-1"></i>
+                <span><?php echo $message; ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <?php if ($error): ?>
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div class="flex">
+                <i class="fas fa-exclamation-circle mr-3 mt-1"></i>
+                <span><?php echo $error; ?></span>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <form method="POST" class="space-y-8">
+        <!-- Basic Settings -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Pengaturan Dasar</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nama Website</label>
+                    <input type="text" name="site_title" value="<?php echo htmlspecialchars($currentSettings['site_title']); ?>" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tagline</label>
+                    <input type="text" name="site_tagline" value="<?php echo htmlspecialchars($currentSettings['site_tagline']); ?>"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi Website</label>
+                <textarea name="site_description" rows="3" 
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-vertical"><?php echo htmlspecialchars($currentSettings['site_description']); ?></textarea>
+            </div>
+        </div>
+        
+        <!-- Contact Information -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Informasi Kontak</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" name="contact_email" value="<?php echo htmlspecialchars($currentSettings['contact_email']); ?>" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Telepon</label>
+                    <input type="tel" name="contact_phone" value="<?php echo htmlspecialchars($currentSettings['contact_phone']); ?>"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
+                <textarea name="contact_address" rows="3" 
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-vertical"><?php echo htmlspecialchars($currentSettings['contact_address']); ?></textarea>
+            </div>
+        </div>
+        
+        <!-- Hero Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Hero Section</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Judul Hero</label>
+                    <input type="text" name="hero_title" value="<?php echo htmlspecialchars($currentSettings['hero_title']); ?>"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Subtitle Hero</label>
+                    <textarea name="hero_subtitle" rows="3" 
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-vertical"><?php echo htmlspecialchars($currentSettings['hero_subtitle']); ?></textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Color Scheme -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Skema Warna</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Warna Primer</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="color" name="primary_color" value="<?php echo $currentSettings['primary_color']; ?>"
+                               class="w-16 h-12 border border-gray-300 rounded cursor-pointer">
+                        <input type="text" value="<?php echo $currentSettings['primary_color']; ?>" readonly
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Warna Sekunder</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="color" name="secondary_color" value="<?php echo $currentSettings['secondary_color']; ?>"
+                               class="w-16 h-12 border border-gray-300 rounded cursor-pointer">
+                        <input type="text" value="<?php echo $currentSettings['secondary_color']; ?>" readonly
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Warna Aksen</label>
+                    <div class="flex items-center space-x-3">
+                        <input type="color" name="accent_color" value="<?php echo $currentSettings['accent_color']; ?>"
+                               class="w-16 h-12 border border-gray-300 rounded cursor-pointer">
+                        <input type="text" value="<?php echo $currentSettings['accent_color']; ?>" readonly
+                               class="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button type="submit" class="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+            <i class="fas fa-save mr-2"></i>Simpan Pengaturan
+        </button>
+    </form>
+</div>
+
+<script>
+// Sync color picker with text input
+document.addEventListener('DOMContentLoaded', function() {
+    const colorInputs = document.querySelectorAll('input[type="color"]');
+    
+    colorInputs.forEach(colorInput => {
+        const textInput = colorInput.nextElementSibling;
+        
+        colorInput.addEventListener('change', function() {
+            textInput.value = this.value;
+        });
+    });
+});
+</script>
+
+<?php include 'includes/footer.php'; ?>
