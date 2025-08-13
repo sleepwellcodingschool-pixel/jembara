@@ -75,10 +75,6 @@ function subscribeNewsletter($email, $name = '') {
     return $stmt->execute();
 }
 
-function formatDate($date, $format = 'd M Y') {
-    return date($format, strtotime($date));
-}
-
 function truncateText($text, $length = 150) {
     if (strlen($text) <= $length) {
         return $text;
