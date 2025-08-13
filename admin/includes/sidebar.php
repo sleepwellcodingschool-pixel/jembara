@@ -124,20 +124,4 @@ $draftPosts = $db->query("SELECT COUNT(*) as count FROM blog_posts WHERE status 
     </div>
 </div>
 
-<style>
-.sidebar-link {
-    @apply flex items-center space-x-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 hover:text-primary transition-colors;
-}
 
-.sidebar-link.active {
-    @apply bg-primary text-white;
-}
-
-.sidebar-link.active:hover {
-    @apply bg-secondary text-white;
-}
-
-.sidebar-link i {
-    @apply w-5 text-center;
-}
-</style>

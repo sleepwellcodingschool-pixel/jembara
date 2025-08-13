@@ -15,7 +15,7 @@ $accentColor = getSetting('accent_color', '#f59e0b');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?>Admin Panel - <?php echo $siteTitle; ?></title>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -31,21 +31,52 @@ $accentColor = getSetting('accent_color', '#f59e0b');
             }
         }
     </script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <!-- Custom Admin CSS -->
     <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/style.css">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="<?php echo SITE_URL; ?>/assets/images/logo.svg">
+
+    <style>
+        .sidebar-link {
+            @apply flex items-center space-x-3 px-3 py-2 text-gray-700 rounded-lg hover:bg-gray-100 hover:text-primary transition-colors;
+        }
+        .sidebar-link.active {
+            @apply bg-primary text-white;
+        }
+        .sidebar-link.active:hover {
+            @apply bg-secondary text-white;
+        }
+        .sidebar-link i {
+            @apply w-5 text-center;
+        }
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            display: none;
+        }
+        .sidebar-overlay.active {
+            display: block;
+        }
+        @media (max-width: 768px) {
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <?php include 'sidebar.php'; ?>
-        
+
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden">
             <!-- Top Navigation -->
@@ -55,14 +86,14 @@ $accentColor = getSetting('accent_color', '#f59e0b');
                     <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-gray-900 focus:outline-none">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
-                    
+
                     <!-- Page Title -->
                     <div class="flex-1 md:flex-none">
                         <h1 class="text-xl font-semibold text-gray-900">
                             <?php echo isset($pageTitle) ? $pageTitle : 'Dashboard'; ?>
                         </h1>
                     </div>
-                    
+
                     <!-- User Menu -->
                     <div class="flex items-center space-x-4">
                         <!-- Website Link -->
@@ -71,7 +102,7 @@ $accentColor = getSetting('accent_color', '#f59e0b');
                            title="Lihat Website">
                             <i class="fas fa-external-link-alt"></i>
                         </a>
-                        
+
                         <!-- Notifications -->
                         <?php
                         $newInquiries = $db->query("SELECT COUNT(*) as count FROM contact_inquiries WHERE status = 'new'")->fetch_assoc()['count'];
@@ -88,7 +119,7 @@ $accentColor = getSetting('accent_color', '#f59e0b');
                                 <?php endif; ?>
                             </a>
                         </div>
-                        
+
                         <!-- User Dropdown -->
                         <div class="relative">
                             <button id="user-menu-btn" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors">
@@ -98,7 +129,7 @@ $accentColor = getSetting('accent_color', '#f59e0b');
                                 <span class="hidden md:block font-medium"><?php echo $_SESSION['admin_name']; ?></span>
                                 <i class="fas fa-chevron-down text-xs"></i>
                             </button>
-                            
+
                             <!-- Dropdown Menu -->
                             <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                                 <div class="p-3 border-b border-gray-200">
@@ -125,6 +156,6 @@ $accentColor = getSetting('accent_color', '#f59e0b');
                     </div>
                 </div>
             </header>
-            
+
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto">
