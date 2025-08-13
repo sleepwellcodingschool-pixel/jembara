@@ -1,0 +1,59 @@
+
+buatkan website 
+teridiri dari yang utama itu :
+Nama Perusahaan: JEMBARA RISET DAN MEDIA 
+Bidang Usaha: Layanan Publikasi Ilmiah & Akses Penerbitan Jurnal
+Tagline: AKU, KAMU DAN DIA, HIDUPKAN PENELITIAN DI INDONESIA
+
+Tentang Kami
+JEMBARA RISET DAN PUBLIKASI perusahaan yang berfokus pada layanan publikasi ilmiah, membantu peneliti, akademisi, dan profesional untuk menjembatani proses penerbitan artikel di jurnal nasional maupun internasional bereputasi. Kami memahami bahwa proses publikasi memerlukan waktu, keahlian, dan strategi yang tepat, sehingga kami hadir sebagai mitra yang memastikan setiap karya ilmiah memiliki peluang terbaik untuk dipublikasikan sesuai standar akademik.
+Visi
+Menjadi jembatan riset nusantara yang berkualitas dan menghidupkan penelitian yang ada di Indonesia
+Misi
+1.	Menyediakan layanan publikasi ilmiah yang cepat, transparan, dan berkualitas.
+2.	Menjalin kemitraan dengan penerbit jurnal bereputasi nasional dan internasional.
+
+3.	Memberikan pendampingan dan konsultasi publikasi yang profesional dan berintegritas.
+4.	Mendukung peningkatan kualitas karya ilmiah untuk kontribusi nyata bagi kemajuan ilmu pengetahuan.
+
+Layanan Kami
+•	Penerbitan Naskah Ilmiah
+Didalamnya mencakup: 
+>Konsultasi Publikasi Jurnal
+Pendampingan pemilihan jurnal yang sesuai dengan bidang penelitian dan target publikasi.
+
+
+>Manajemen Naskah & Submission
+Pengelolaan naskah mulai dari editing, format, hingga proses submission ke publisher.
+>Proofreading & Editing Akademik
+Perbaikan tata bahasa, gaya penulisan akademik, dan format sesuai panduan jurnal.
+>Terjemahan Akademik Profesional
+Penerjemahan karya ilmiah ke bahasa Inggris atau bahasa lain dengan standar akademik internasional.
+> Monitoring & Follow Up Submission, LOA dan Link Publikasi
+Pemantauan proses review dan komunikasi dengan pihak jurnal hingga publikasi selesai.
+
+Keunggulan Kami 
+•	Jaringan Luas Publisher Bereputasi
+Koneksi langsung dengan berbagai jurnal nasional terakreditasi Sinta dan internasional bereputasi.
+•	Proses Transparan
+Klien dapat memantau progres setiap tahap publikasi.
+•	Tim Profesional Berpengalaman
+Berasal dari latar belakang akademisi dan praktisi publikasi.
+•	Dukungan Penuh Hingga Terbit
+Layanan end-to-end sampai artikel resmi terbit di jurnal.
+Kontak Kami
+📍 Alamat: (Jl. K.H. Sholeh Iskandar Raya Km. 2, Kedung Badak, Bogor 16161)
+📧 Email: (jembararisetdanmedia@gmail.com) 
+📱 WhatsApp: (0822 4198 0834))
+🌐 Website: (.......)
+📱 Instagram / LinkedIn: (ON PROSES)
+
+
+spserti Company Profile pada Umumnya jadi lengkap lainnya 
+ada fitur blog/berita juga ya 
+lalu saya ingin ada fitur live chat juga 
+
+buatkan juga admin panel nya bisa merubah semua konten termasuk warna, logo, pokoknya semua section 
+gunakan php native mysqli phpmyadmin dan buatkan juga sql lengkapnya jadi kamu gausah jalanin disini
+gunakan design website yang keren banget kekinian dan profesional kalo bisa menggunakan tailwind css, jangan running disini yaa ingat 
+dan ingat fitur admin bisa mengubah semua yang ada di website utama termasuk hal hal konten2 bisa di crud, sekalian buatkan juga logo nya 
