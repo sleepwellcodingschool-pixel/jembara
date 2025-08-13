@@ -6,7 +6,7 @@ $companyName = getSetting('company_name', 'JEMBARA RISET DAN MEDIA');
 $siteTitle = getSetting('site_title', 'JEMBARA RISET DAN MEDIA');
 ?>
     </div> <!-- Close pt-16 div from header -->
-    
+
     <!-- Footer -->
     <footer class="bg-gray-900 text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -27,7 +27,7 @@ $siteTitle = getSetting('site_title', 'JEMBARA RISET DAN MEDIA');
                         Kami membantu peneliti, akademisi, dan profesional untuk menjembatani proses penerbitan artikel di jurnal nasional maupun internasional bereputasi.
                     </p>
                 </div>
-                
+
                 <!-- Quick Links -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Menu</h4>
@@ -39,7 +39,7 @@ $siteTitle = getSetting('site_title', 'JEMBARA RISET DAN MEDIA');
                         <li><a href="<?php echo SITE_URL; ?>/pages/contact.php" class="text-gray-400 hover:text-white transition-colors">Kontak</a></li>
                     </ul>
                 </div>
-                
+
                 <!-- Contact Info -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Kontak</h4>
@@ -57,7 +57,7 @@ $siteTitle = getSetting('site_title', 'JEMBARA RISET DAN MEDIA');
                             <a href="https://wa.me/<?php echo str_replace([' ', '-', '(', ')'], '', $contactPhone); ?>" class="text-gray-400 hover:text-white transition-colors text-sm"><?php echo $contactPhone; ?></a>
                         </div>
                     </div>
-                    
+
                     <!-- Newsletter Signup -->
                     <div class="mt-6">
                         <h5 class="font-medium mb-2">Newsletter</h5>
@@ -70,7 +70,7 @@ $siteTitle = getSetting('site_title', 'JEMBARA RISET DAN MEDIA');
                     </div>
                 </div>
             </div>
-            
+
             <!-- Bottom Footer -->
             <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-400 text-sm">
@@ -93,54 +93,7 @@ $siteTitle = getSetting('site_title', 'JEMBARA RISET DAN MEDIA');
             </div>
         </div>
     </footer>
-    
-    <!-- Live Chat Widget -->
-    <div id="chat-widget" class="fixed bottom-4 right-4 z-50">
-        <!-- Chat Button -->
-        <button id="chat-toggle" class="bg-primary hover:bg-secondary text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110">
-            <i class="fas fa-comments text-xl"></i>
-        </button>
-        
-        <!-- Chat Window -->
-        <div id="chat-window" class="hidden absolute bottom-16 right-0 w-80 bg-white rounded-lg shadow-2xl border">
-            <!-- Chat Header -->
-            <div class="bg-primary text-white p-4 rounded-t-lg flex justify-between items-center">
-                <div>
-                    <h4 class="font-semibold">Live Chat</h4>
-                    <p class="text-sm opacity-90">Kami siap membantu Anda</p>
-                </div>
-                <button id="chat-close" class="text-white hover:text-gray-200">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <!-- Chat Messages -->
-            <div id="chat-messages" class="h-64 overflow-y-auto p-4 space-y-3">
-                <div class="text-center text-gray-500 text-sm">
-                    Mulai percakapan dengan mengetik pesan Anda
-                </div>
-            </div>
-            
-            <!-- Chat Input -->
-            <div class="p-4 border-t">
-                <form id="chat-form">
-                    <div class="flex space-x-2">
-                        <input type="text" id="chat-input" placeholder="Ketik pesan..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary">
-                        <button type="submit" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary transition-colors">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </form>
-                
-                <!-- Contact Info Form (shown initially) -->
-                <div id="chat-info-form" class="mt-3">
-                    <input type="text" id="chat-name" placeholder="Nama Anda" class="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:border-primary">
-                    <input type="email" id="chat-email" placeholder="Email Anda" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary">
-                </div>
-            </div>
-        </div>
-    </div>
-    
+
     <!-- WhatsApp Float Button -->
     <div class="fixed bottom-4 left-4 z-40">
         <a href="https://wa.me/<?php echo str_replace([' ', '-', '(', ')'], '', $contactPhone); ?>" target="_blank" class="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 flex items-center space-x-2">
@@ -148,9 +101,11 @@ $siteTitle = getSetting('site_title', 'JEMBARA RISET DAN MEDIA');
             <span class="hidden sm:inline text-sm font-medium">WhatsApp</span>
         </a>
     </div>
-    
+
     <!-- Scripts -->
-    <script src="<?php echo SITE_URL; ?>/assets/js/main.js"></script>
-    <script src="<?php echo SITE_URL; ?>/assets/js/chat.js"></script>
+    <script src="assets/js/main.js"></script>
+
+    <!-- Chat Widget -->
+    <?php include 'chat-widget.php'; ?>
 </body>
 </html>

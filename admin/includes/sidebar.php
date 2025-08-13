@@ -18,7 +18,7 @@ $draftPosts = $db->query("SELECT COUNT(*) as count FROM blog_posts WHERE status 
             </div>
         </div>
     </div>
-    
+
     <!-- Navigation -->
     <nav class="mt-8 px-4 space-y-2">
         <!-- Dashboard -->
@@ -26,16 +26,21 @@ $draftPosts = $db->query("SELECT COUNT(*) as count FROM blog_posts WHERE status 
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
-        
+
         <!-- Content Management -->
         <div class="pt-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Konten</p>
-            
+
             <a href="content.php" class="sidebar-link <?php echo $currentPage === 'content' ? 'active' : ''; ?>">
                 <i class="fas fa-file-alt"></i>
-                <span>Kelola Konten</span>
+                <span>Konten & Halaman</span>
             </a>
-            
+
+            <a href="testimonials.php" class="sidebar-link <?php echo $currentPage === 'testimonials' ? 'active' : ''; ?>">
+                <i class="fas fa-quote-left"></i>
+                <span>Testimonial</span>
+            </a>
+
             <a href="blog.php" class="sidebar-link <?php echo $currentPage === 'blog' ? 'active' : ''; ?>">
                 <i class="fas fa-newspaper"></i>
                 <span>Blog & Artikel</span>
@@ -46,11 +51,11 @@ $draftPosts = $db->query("SELECT COUNT(*) as count FROM blog_posts WHERE status 
                 <?php endif; ?>
             </a>
         </div>
-        
+
         <!-- Communication -->
         <div class="pt-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Komunikasi</p>
-            
+
             <a href="inquiries.php" class="sidebar-link <?php echo $currentPage === 'inquiries' ? 'active' : ''; ?>">
                 <i class="fas fa-envelope"></i>
                 <span>Pesan Masuk</span>
@@ -60,49 +65,49 @@ $draftPosts = $db->query("SELECT COUNT(*) as count FROM blog_posts WHERE status 
                 </span>
                 <?php endif; ?>
             </a>
-            
+
             <a href="chat.php" class="sidebar-link <?php echo $currentPage === 'chat' ? 'active' : ''; ?>">
                 <i class="fas fa-comments"></i>
                 <span>Live Chat</span>
             </a>
-            
+
             <a href="newsletter.php" class="sidebar-link <?php echo $currentPage === 'newsletter' ? 'active' : ''; ?>">
                 <i class="fas fa-mail-bulk"></i>
                 <span>Newsletter</span>
             </a>
         </div>
-        
+
         <!-- Website Management -->
         <div class="pt-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Website</p>
-            
+
             <a href="settings.php" class="sidebar-link <?php echo $currentPage === 'settings' ? 'active' : ''; ?>">
                 <i class="fas fa-cog"></i>
                 <span>Pengaturan</span>
             </a>
-            
+
             <a href="media.php" class="sidebar-link <?php echo $currentPage === 'media' ? 'active' : ''; ?>">
                 <i class="fas fa-images"></i>
                 <span>Media</span>
             </a>
         </div>
-        
+
         <!-- Quick Actions -->
         <div class="pt-4">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Aksi Cepat</p>
-            
+
             <a href="blog.php?action=create" class="sidebar-link">
                 <i class="fas fa-plus"></i>
                 <span>Artikel Baru</span>
             </a>
-            
+
             <a href="<?php echo SITE_URL; ?>/" target="_blank" class="sidebar-link">
                 <i class="fas fa-external-link-alt"></i>
                 <span>Lihat Website</span>
             </a>
         </div>
     </nav>
-    
+
     <!-- User Info -->
     <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
         <div class="flex items-center space-x-3">
@@ -123,5 +128,3 @@ $draftPosts = $db->query("SELECT COUNT(*) as count FROM blog_posts WHERE status 
         </div>
     </div>
 </div>
-
-

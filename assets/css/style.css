@@ -189,11 +189,48 @@ html {
 }
 
 .chat-message.visitor {
-    @apply bg-gray-100 text-gray-900 ml-auto;
+    background-color: #2563eb;
+    color: white;
+    margin-left: auto;
 }
 
 .chat-message.admin {
-    @apply bg-primary text-white mr-auto;
+    background-color: #f3f4f6;
+    color: #1f2937;
+    margin-right: auto;
+}
+
+/* Chat widget animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+#chatWidget #chatButton {
+    animation: pulse 2s infinite;
+}
+
+#chatWindow {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Responsive chat widget */
+@media (max-width: 480px) {
+    .chat-widget {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    #chatWindow {
+        width: calc(100vw - 30px);
+        right: 15px;
+        bottom: 80px;
+    }
 }
 
 /* Form improvements */
