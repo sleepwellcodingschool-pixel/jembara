@@ -192,6 +192,31 @@ INSERT INTO testimonials (client_name, client_position, client_company, testimon
 ('Prof. Siti Aminah', 'Peneliti Senior', 'LIPI', 'Berkat bantuan JEMBARA, artikel penelitian saya berhasil dipublikasikan di jurnal bereputasi. Highly recommended!', 5, 2),
 ('Dr. Bambang Prasetyo', 'Kepala Penelitian', 'Institut Teknologi Bandung', 'Proses yang cepat dan hasil yang memuaskan. JEMBARA benar-benar memahami kebutuhan publikasi ilmiah.', 5, 3);
 
+-- Admin activity log table
+CREATE TABLE admin_activity_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT,
+    activity_type ENUM('login', 'logout', 'chat_reply', 'close_session', 'other') NOT NULL,
+    activity_description TEXT,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES admin_users(id) ON DELETE CASCADE
+);
+
+-- Push notification subscriptions table
+CREATE TABLE push_subscriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT NOT NULL,
+    endpoint TEXT NOT NULL,
+    p256dh_key TEXT,
+    auth_key TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (admin_id) REFERENCES admin_users(id) ON DELETE CASCADE
+);
+
 -- Insert sample blog posts
 INSERT INTO blog_posts (title, slug, excerpt, content, author_id, status, published_at) VALUES
 ('Tips Memilih Jurnal yang Tepat untuk Publikasi', 'tips-memilih-jurnal-publikasi', 'Panduan lengkap untuk peneliti dalam memilih jurnal yang sesuai dengan bidang penelitian dan target publikasi.', 'Memilih jurnal yang tepat merupakan langkah krusial dalam proses publikasi ilmiah. Artikel ini akan membahas berbagai faktor yang perlu dipertimbangkan, mulai dari scope jurnal, impact factor, hingga proses review. \n\nFaktor-faktor penting yang harus diperhatikan:\n1. Kesesuaian dengan bidang penelitian\n2. Impact factor dan reputasi jurnal\n3. Proses dan waktu review\n4. Biaya publikasi\n5. Open access policy\n\nDengan mempertimbangkan faktor-faktor tersebut, peneliti dapat meningkatkan peluang publikasi yang sukses.', 1, 'published', NOW()),
